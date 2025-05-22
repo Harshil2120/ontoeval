@@ -37,6 +37,8 @@ const UserInfo = () => {
 
   const [selectedresValue, setSelectedresValue] = useState("");
   const [comments, setComments] = useState("");
+  const [classones, setClassones] = useState("");
+  const [classtwos, setClasstwos] = useState("");
 
   const [showAlert, setShowAlert] = useState(false);
 
@@ -72,6 +74,10 @@ const UserInfo = () => {
       // Restore radio button selections
       setSelectedresValue(currentAnnotate.response || "");
 
+      setClassones(currentAnnotate.class1 || "");
+
+      setClasstwos(currentAnnotate.class2 || "");
+
       // Restore comments
       setComments(currentAnnotate.comment || "");
     }
@@ -83,6 +89,14 @@ const UserInfo = () => {
 
   const handleCommentsChange = (event) => {
     setComments(event.target.value);
+  };
+
+  const handleClassonesChange = (event) => {
+    setClassones(event.target.value);
+  };
+
+  const handleClasstwosChange = (event) => {
+    setClasstwos(event.target.value);
   };
 
   useEffect(() => {
@@ -105,6 +119,8 @@ const UserInfo = () => {
   const submitCurrentQuestion = async () => {
     topics[currentTopicIndex].annotate.response = selectedresValue;
     topics[currentTopicIndex].annotate.comment = comments;
+    topics[currentTopicIndex].annotate.class1 = classones;
+    topics[currentTopicIndex].annotate.class2 = classtwos;
     topics[currentTopicIndex].edited = "yes";
     topics[currentTopicIndex].answered = "Answered";
 
@@ -112,8 +128,11 @@ const UserInfo = () => {
       questionSerial: topics[currentTopicIndex].serial,
       annotate: {
         question: topics[currentTopicIndex].annotate.question,
+        context: topics[currentTopicIndex].annotate.context,
         comment: topics[currentTopicIndex].annotate.comment,
         response: topics[currentTopicIndex].annotate.response,
+        class1: topics[currentTopicIndex].annotate.class1,
+        class2: topics[currentTopicIndex].annotate.class2,
       },
       answered: topics[currentTopicIndex].answered,
       edited: topics[currentTopicIndex].edited,
@@ -137,28 +156,47 @@ const UserInfo = () => {
 
   // Navigation handlers
   const handleNextClick = async () => {
-    if (currentTopicIndex < topics.length - 1) {
-      try {
-        await submitCurrentQuestion();
-        setCurrentTopicIndex(currentTopicIndex + 1);
-        setIsVisible(false);
-      } catch (error) {
-        setShowAlert(false);
-        console.log("Error updating topic: ", error);
-      }
+    // if (currentTopicIndex < topics.length - 1) {
+    //   try {
+    //     await submitCurrentQuestion();
+    //     setCurrentTopicIndex(currentTopicIndex + 1);
+    //     setIsVisible(false);
+    //   } catch (error) {
+    //     setShowAlert(false);
+    //     console.log("Error updating topic: ", error);
+    //   }
+    // }
+    try {
+      await submitCurrentQuestion();
+      setCurrentTopicIndex((idx) =>
+        /* if we're at the last index, go to 0, else +1 */
+        idx === topics.length - 1 ? 0 : idx + 1
+      );
+      setIsVisible(false);
+    } catch (error) {
+      setShowAlert(false);
+      console.log("Error updating topic: ", error);
     }
   };
 
   const handleBackClick = async () => {
-    if (currentTopicIndex > 0) {
-      try {
-        await submitCurrentQuestion();
-        setCurrentTopicIndex(currentTopicIndex - 1);
-        setIsVisible(false);
-      } catch (error) {
-        setShowAlert(false);
-        console.log("Error updating topic: ", error);
-      }
+    // if (currentTopicIndex > 0) {
+    //   try {
+    //     await submitCurrentQuestion();
+    //     setCurrentTopicIndex(currentTopicIndex - 1);
+    //     setIsVisible(false);
+    //   } catch (error) {
+    //     setShowAlert(false);
+    //     console.log("Error updating topic: ", error);
+    //   }
+    // }
+    try {
+      await submitCurrentQuestion();
+      setCurrentTopicIndex((idx) => (idx === 0 ? topics.length - 1 : idx - 1));
+      setIsVisible(false);
+    } catch (error) {
+      setShowAlert(false);
+      console.log("Error updating topic: ", error);
     }
   };
 
@@ -210,26 +248,49 @@ const UserInfo = () => {
 
             <div className="space-x-3 text-md">
               <h1>Question</h1>
-              <h2 className=" bg-emerald-100 p-2 rounded-md mb-1">
+              <h2 className=" bg-emerald-100 p-2 w-fit rounded-md mb-1">
                 {topics[currentTopicIndex].annotate.question}
               </h2>
             </div>
+            {topics[currentTopicIndex]?.serial < 58 ? (
+              <div className="space-x-3 pl-3 font-bold text-md flex">
+                <h2 className=" bg-emerald-100 p-2 rounded-md mb-1">
+                  {topics[currentTopicIndex].annotate.question.match(
+                    /'([^']+)'/
+                  )?.[1] ?? ""}
+                </h2>
+                <h2 className=" bg-emerald-100 p-2 rounded-md mb-1">{`->`}</h2>
+                <h2 className=" bg-emerald-100 p-2 rounded-md mb-1">
+                  (SubClass Of)
+                </h2>
+                <h2 className=" bg-emerald-100 p-2 rounded-md mb-1">{`->`}</h2>
+                <h2 className=" bg-emerald-100 p-2 rounded-md mb-1">
+                  {topics[currentTopicIndex].annotate.question
+                    .match(/'([^']+)'/g)?.[1]
+                    ?.replace(/'/g, "") ?? ""}
+                </h2>
+              </div>
+            ) : (
+              ""
+            )}
+
+            {topics[currentTopicIndex]?.serial < 78 ? (
+              <div className="space-x-3 text-md">
+                <h1>Context</h1>
+                <h2 className=" bg-emerald-100 p-2 rounded-md mb-1">
+                  {topics[currentTopicIndex].annotate.context}
+                </h2>
+              </div>
+            ) : (
+              ""
+            )}
           </nav>
 
           <div
-            className="overflow-scroll border-b-2 h-96 border-t-2 border-dashed border-slate-600 pb-24"
+            className="overflow-scroll bg-stone-100 border-b-2 h-96 border-t-2 border-dashed border-slate-600 pb-28"
             ref={scrollRef}
           >
-            {topics[currentTopicIndex]?.serial === 83 ? (
-              // Completed message only
-              <div className="flex justify-center my-4">
-                <div className="bg-green-100 border text-center border-green-400 text-green-700 px-6 py-3 rounded shadow-md">
-                  <strong className="font-bold">
-                    🎉 Completed! You have completed all the question.
-                  </strong>
-                </div>
-              </div>
-            ) : topics[currentTopicIndex]?.serial > 77 ? (
+            {topics[currentTopicIndex]?.serial > 77 ? (
               // Only comment box
               <div className="flex flex-col justify-center space-x-3 space-y-1 p-3">
                 <h1>Feedback</h1>
@@ -245,7 +306,7 @@ const UserInfo = () => {
             ) : topics[currentTopicIndex]?.serial > 57 ? (
               // Binary question UI
               <div className="lg:flex justify-center lg:space-x-3 space-y-1 m-3">
-                <form className="flex flex-col border border-dashed flex-grow border-gray-600 rounded p-3 lg:w-1/3">
+                <form className="flex bg-stone-200 flex-col border border-dashed flex-grow border-gray-600 rounded p-3 lg:w-1/3">
                   <div className="flex">
                     <label>
                       <input
@@ -286,38 +347,8 @@ const UserInfo = () => {
             ) : (
               // Likert scale question UI
               <div className="flex justify-center space-x-3 space-y-1 p-3">
-                <form className="flex flex-col border border-dashed border-gray-600 rounded p-3 flex-grow">
+                <form className="flex bg-stone-200 flex-col border border-dashed border-gray-600 rounded p-3 flex-grow">
                   <div className="flex">
-                    <label>
-                      <input
-                        type="radio"
-                        value="Strongly Disagree"
-                        checked={selectedresValue === "Strongly Disagree"}
-                        onChange={handleRadioChange}
-                      />
-                      <span>Strongly Disagree</span>
-                    </label>
-
-                    <label>
-                      <input
-                        type="radio"
-                        value="Disagree"
-                        checked={selectedresValue === "Disagree"}
-                        onChange={handleRadioChange}
-                      />
-                      <span>Disagree</span>
-                    </label>
-
-                    <label>
-                      <input
-                        type="radio"
-                        value="Neutral"
-                        checked={selectedresValue === "Neutral"}
-                        onChange={handleRadioChange}
-                      />
-                      <span>Neutral</span>
-                    </label>
-
                     <label>
                       <input
                         type="radio"
@@ -331,13 +362,50 @@ const UserInfo = () => {
                     <label>
                       <input
                         type="radio"
-                        value="Strongly Agree"
-                        checked={selectedresValue === "Strongly Agree"}
+                        value="Disagree"
+                        checked={selectedresValue === "Disagree"}
                         onChange={handleRadioChange}
                       />
-                      <span>Strongly Agree</span>
+                      <span>Disagree</span>
                     </label>
                   </div>
+
+                  {selectedresValue === "Disagree" && (
+                    <div className="flex flex-col space-y-2">
+                      <div>
+                        <p>
+                          Write the Class in place of
+                          <span className="font-bold">
+                            {topics[currentTopicIndex].annotate.question.match(
+                              /'([^']+)'/
+                            )?.[1] ?? ""}
+                          </span>
+                        </p>
+
+                        <textarea
+                          className="mt-2 p-2 w-full border rounded"
+                          value={classones}
+                          onChange={handleClassonesChange}
+                        ></textarea>
+                      </div>
+
+                      <div>
+                        <p>
+                          Write the Class in place of
+                          <span className="font-bold">
+                            {topics[currentTopicIndex].annotate.question
+                              .match(/'([^']+)'/g)?.[1]
+                              ?.replace(/'/g, "") ?? ""}
+                          </span>
+                        </p>
+                        <textarea
+                          className="mt-2 p-2 w-full border rounded"
+                          value={classtwos}
+                          onChange={handleClasstwosChange}
+                        ></textarea>
+                      </div>
+                    </div>
+                  )}
                   <textarea
                     className="mt-2 p-2 border rounded"
                     placeholder="Add your comments here"
@@ -349,7 +417,7 @@ const UserInfo = () => {
             )}
           </div>
 
-          <div className="fixed bottom-0 w-full bg-white flex-col items-center">
+          <div className="fixed bottom-0 border-gray-500 border-dashed w-full bg-white flex-col items-center">
             <div className="flex flex-col items-center">
               {!isVisible && (
                 <div
@@ -367,7 +435,7 @@ const UserInfo = () => {
               <button
                 className=" bg-red-700 text-white font-bold py-2 px-4 rounded hover:disabled:cursor-not-allowed"
                 onClick={handleBackClick}
-                disabled={currentTopicIndex === 0}
+                // disabled={currentTopicIndex === 0}
               >
                 Back
               </button>
@@ -381,7 +449,7 @@ const UserInfo = () => {
               <button
                 className=" bg-green-600 text-white font-bold py-2 px-4 rounded hover:disabled:cursor-not-allowed"
                 onClick={handleNextClick}
-                disabled={currentTopicIndex === topics.length - 1}
+                // disabled={currentTopicIndex === topics.length - 1}
               >
                 Next
               </button>
