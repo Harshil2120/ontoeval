@@ -8,6 +8,7 @@ const questionSchema = new Schema({
     comment: String,
     class1: String,
     class2: String,
+    classof: String,
     context: String,
   },
   edited: String,

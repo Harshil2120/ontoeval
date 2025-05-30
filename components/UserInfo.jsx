@@ -39,6 +39,7 @@ const UserInfo = () => {
   const [comments, setComments] = useState("");
   const [classones, setClassones] = useState("");
   const [classtwos, setClasstwos] = useState("");
+  const [classofs, setClassofs] = useState("");
 
   const [showAlert, setShowAlert] = useState(false);
 
@@ -77,6 +78,7 @@ const UserInfo = () => {
       setClassones(currentAnnotate.class1 || "");
 
       setClasstwos(currentAnnotate.class2 || "");
+      setClassofs(currentAnnotate.classof || "");
 
       // Restore comments
       setComments(currentAnnotate.comment || "");
@@ -93,6 +95,10 @@ const UserInfo = () => {
 
   const handleClassonesChange = (event) => {
     setClassones(event.target.value);
+  };
+
+  const handleClassofsChange = (event) => {
+    setClassofs(event.target.value);
   };
 
   const handleClasstwosChange = (event) => {
@@ -121,6 +127,7 @@ const UserInfo = () => {
     topics[currentTopicIndex].annotate.comment = comments;
     topics[currentTopicIndex].annotate.class1 = classones;
     topics[currentTopicIndex].annotate.class2 = classtwos;
+    topics[currentTopicIndex].annotate.classof = classofs;
     topics[currentTopicIndex].edited = "yes";
     topics[currentTopicIndex].answered = "Answered";
 
@@ -133,6 +140,7 @@ const UserInfo = () => {
         response: topics[currentTopicIndex].annotate.response,
         class1: topics[currentTopicIndex].annotate.class1,
         class2: topics[currentTopicIndex].annotate.class2,
+        classof: topics[currentTopicIndex].annotate.classof,
       },
       answered: topics[currentTopicIndex].answered,
       edited: topics[currentTopicIndex].edited,
@@ -346,7 +354,7 @@ const UserInfo = () => {
               </div>
             ) : (
               // Likert scale question UI
-              <div className="flex justify-center space-x-3 space-y-1 p-3">
+              <div className="justify-center space-y-2 p-3">
                 <form className="flex bg-stone-200 flex-col border border-dashed border-gray-600 rounded p-3 flex-grow">
                   <div className="flex">
                     <label>
@@ -412,6 +420,135 @@ const UserInfo = () => {
                     value={comments}
                     onChange={handleCommentsChange}
                   ></textarea>
+                </form>
+
+                <form className="flex bg-stone-200 flex-col border border-dashed border-gray-600 rounded p-3 flex-grow">
+                  <p className="font-bold">
+                    In your opinion, which of the following relationships would
+                    be more appropriate to use instead of 'SubClass Of'?
+                  </p>
+                  <div className="p-1">
+                    <label>
+                      <input
+                        type="radio"
+                        value="Causes"
+                        checked={classofs === "Causes"}
+                        onChange={handleClassofsChange}
+                      />
+                      <span>Causes</span>
+                    </label>
+
+                    <label>
+                      <input
+                        type="radio"
+                        value="CausesDesire"
+                        checked={classofs === "CausesDesire"}
+                        onChange={handleClassofsChange}
+                      />
+                      <span>CausesDesire</span>
+                    </label>
+
+                    <label>
+                      <input
+                        type="radio"
+                        value="MotivatedByGoal"
+                        checked={classofs === "MotivatedByGoal"}
+                        onChange={handleClassofsChange}
+                      />
+                      <span>MotivatedByGoal</span>
+                    </label>
+
+                    <label>
+                      <input
+                        type="radio"
+                        value="Entails"
+                        checked={classofs === "Entails"}
+                        onChange={handleClassofsChange}
+                      />
+                      <span>Entails</span>
+                    </label>
+
+                    <label>
+                      <input
+                        type="radio"
+                        value="SimilarTo"
+                        checked={classofs === "SimilarTo"}
+                        onChange={handleClassofsChange}
+                      />
+                      <span>SimilarTo</span>
+                    </label>
+
+                    <label>
+                      <input
+                        type="radio"
+                        value="InstanceOf"
+                        checked={classofs === "InstanceOf"}
+                        onChange={handleClassofsChange}
+                      />
+                      <span>InstanceOf</span>
+                    </label>
+
+                    <label>
+                      <input
+                        type="radio"
+                        value="DefinedAs"
+                        checked={classofs === "DefinedAs"}
+                        onChange={handleClassofsChange}
+                      />
+                      <span>DefinedAs</span>
+                    </label>
+
+                    <label>
+                      <input
+                        type="radio"
+                        value="Associated_with"
+                        checked={classofs === "Associated_with"}
+                        onChange={handleClassofsChange}
+                      />
+                      <span>Associated_with</span>
+                    </label>
+
+                    <label>
+                      <input
+                        type="radio"
+                        value="LeadsTo"
+                        checked={classofs === "LeadsTo"}
+                        onChange={handleClassofsChange}
+                      />
+                      <span>LeadsTo</span>
+                    </label>
+
+                    <label>
+                      <input
+                        type="radio"
+                        value="UsedBy"
+                        checked={classofs === "UsedBy"}
+                        onChange={handleClassofsChange}
+                      />
+                      <span>UsedBy</span>
+                    </label>
+
+                    <label>
+                      <input
+                        type="radio"
+                        value="ImportantTo"
+                        checked={classofs === "ImportantTo"}
+                        onChange={handleClassofsChange}
+                      />
+                      <span>ImportantTo</span>
+                    </label>
+
+                    <label>
+                      <input
+                        type="radio"
+                        value="PartOf"
+                        checked={classofs === "PartOf"}
+                        onChange={handleClassofsChange}
+                      />
+                      <span>PartOf</span>
+                    </label>
+                  </div>
+
                 </form>
               </div>
             )}
